@@ -1,0 +1,278 @@
+{
+    "items": [
+        {
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041624,
+            "is_answered": false,
+            "last_activity_date": 1654071858,
+            "last_edit_date": 1654044404,
+            "link": "https://stackoverflow.com/questions/72455196/how-can-i-rotate-x-axis-labels-so-they-are-diagonal-and-not-horizontal-on-plotly",
+            "owner": {
+                "account_id": 25441396,
+                "display_name": "guseso11",
+                "link": "https://stackoverflow.com/users/19244271/guseso11",
+                "profile_image": "https://www.gravatar.com/avatar/04e8b5065e348e046db2554b4369af96?s=256&d=identicon&r=PG",
+                "reputation": 1,
+                "user_id": 19244271,
+                "user_type": "registered"
+            },
+            "question_id": 72455196,
+            "score": 0,
+            "tags": [
+                "python",
+                "plotly-python"
+            ],
+            "title": "How can I rotate x axis labels so they are diagonal and not horizontal on Plotly?",
+            "view_count": 36
+        },
+        {
+            "accepted_answer_id": 72455229,
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041648,
+            "is_answered": true,
+            "last_activity_date": 1654203468,
+            "last_edit_date": 1654203468,
+            "link": "https://stackoverflow.com/questions/72455200/react-is-using-global-var-instead-of-given-information-when-other-information-is",
+            "owner": {
+                "account_id": 22726869,
+                "display_name": "Samiul Nahiyan",
+                "link": "https://stackoverflow.com/users/16890448/samiul-nahiyan",
+                "profile_image": "https://lh3.googleusercontent.com/a-/AOh14Gg9x8szM1-nZ4nsVLY1Ml-XvrnN8PED5ld4ivnj6w=k-s256",
+                "reputation": 11,
+                "user_id": 16890448,
+                "user_type": "registered"
+            },
+            "question_id": 72455200,
+            "score": 1,
+            "tags": [
+                "css",
+                "reactjs"
+            ],
+            "title": "react is using global var instead of given information when other information is working fine",
+            "view_count": 29
+        },
+        {
+            "accepted_answer_id": 72455324,
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041707,
+            "is_answered": true,
+            "last_activity_date": 1654049954,
+            "last_edit_date": 1654049954,
+            "link": "https://stackoverflow.com/questions/72455204/mysql-select-distinct-user-with-each-of-their-own-preference",
+            "owner": {
+                "account_id": 22443986,
+                "display_name": "Enfield li",
+                "link": "https://stackoverflow.com/users/16648127/enfield-li",
+                "profile_image": "https://lh3.googleusercontent.com/a-/AOh14Gi1fxsGw6v1p1_YJWSGK8SFP46IivbTxW0kvmbl=k-s256",
+                "reputation": 724,
+                "user_id": 16648127,
+                "user_type": "registered"
+            },
+            "question_id": 72455204,
+            "score": -1,
+            "tags": [
+                "mysql",
+                "sql",
+                "join"
+            ],
+            "title": "Mysql select distinct user with each of their own preference",
+            "view_count": 59
+        },
+        {
+            "answer_count": 0,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041727,
+            "is_answered": false,
+            "last_activity_date": 1654042697,
+            "last_edit_date": 1654042697,
+            "link": "https://stackoverflow.com/questions/72455205/fgets-stuck-when-reading-from-an-external-process-pipe",
+            "owner": {
+                "accept_rate": 65,
+                "account_id": 1458267,
+                "display_name": "foki",
+                "link": "https://stackoverflow.com/users/1398282/foki",
+                "profile_image": "https://www.gravatar.com/avatar/51ad9dc5224b0b292b820eeb71d17c9a?s=256&d=identicon&r=PG",
+                "reputation": 8348,
+                "user_id": 1398282,
+                "user_type": "registered"
+            },
+            "question_id": 72455205,
+            "score": 1,
+            "tags": [
+                "c++",
+                "linux",
+                "popen",
+                "fgets",
+                "iperf3"
+            ],
+            "title": "fgets stuck when reading from an external process pipe",
+            "view_count": 37
+        },
+        {
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041764,
+            "is_answered": true,
+            "last_activity_date": 1654279586,
+            "link": "https://stackoverflow.com/questions/72455207/deploy-flask-web-app-with-sqlite-database-via-heroku",
+            "owner": {
+                "account_id": 22697298,
+                "display_name": "Jonathan Pangkey",
+                "link": "https://stackoverflow.com/users/16865221/jonathan-pangkey",
+                "profile_image": "https://lh3.googleusercontent.com/a-/AOh14GhlvXLs7AmhsJGQ453OZp2IRli6Hei0IHDodeUc=k-s256",
+                "reputation": 69,
+                "user_id": 16865221,
+                "user_type": "registered"
+            },
+            "question_id": 72455207,
+            "score": 0,
+            "tags": [
+                "sqlite",
+                "flask",
+                "sqlalchemy"
+            ],
+            "title": "Deploy flask web app with sqlite database via heroku",
+            "view_count": 30
+        },
+        {
+            "accepted_answer_id": 72455235,
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041791,
+            "is_answered": true,
+            "last_activity_date": 1654042163,
+            "link": "https://stackoverflow.com/questions/72455208/splitting-strings-in-list",
+            "owner": {
+                "account_id": 20443800,
+                "display_name": "mbakgor",
+                "link": "https://stackoverflow.com/users/17757170/mbakgor",
+                "profile_image": "https://lh3.googleusercontent.com/a-/AOh14GjX0vmPMYcavqzhWVxaswoTpgFKNPQIlmI58PLy=k-s256",
+                "reputation": 13,
+                "user_id": 17757170,
+                "user_type": "registered"
+            },
+            "question_id": 72455208,
+            "score": 1,
+            "tags": [
+                "python",
+                "split"
+            ],
+            "title": "Splitting Strings In List",
+            "view_count": 22
+        },
+        {
+            "answer_count": 2,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041887,
+            "is_answered": true,
+            "last_activity_date": 1654047569,
+            "link": "https://stackoverflow.com/questions/72455213/prevent-key-leak-in-http-get-requests",
+            "owner": {
+                "accept_rate": 66,
+                "account_id": 158306,
+                "display_name": "jamzsabb",
+                "link": "https://stackoverflow.com/users/376844/jamzsabb",
+                "profile_image": "https://www.gravatar.com/avatar/2220b18594033e2309ca64809627d019?s=256&d=identicon&r=PG",
+                "reputation": 1025,
+                "user_id": 376844,
+                "user_type": "registered"
+            },
+            "question_id": 72455213,
+            "score": 1,
+            "tags": [
+                "javascript",
+                "security",
+                "websecurity"
+            ],
+            "title": "Prevent key leak in HTTP GET requests",
+            "view_count": 38
+        },
+        {
+            "accepted_answer_id": 72457256,
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041924,
+            "is_answered": true,
+            "last_activity_date": 1654064457,
+            "link": "https://stackoverflow.com/questions/72455215/changing-column-names-based-on-several-possibilities-of-what-the-original-column",
+            "owner": {
+                "account_id": 18300194,
+                "display_name": "Dr Wampa",
+                "link": "https://stackoverflow.com/users/13325186/dr-wampa",
+                "profile_image": "https://www.gravatar.com/avatar/a7fbf505c9f5bf19ba58dcd0cd602692?s=256&d=identicon&r=PG&f=1",
+                "reputation": 405,
+                "user_id": 13325186,
+                "user_type": "registered"
+            },
+            "question_id": 72455215,
+            "score": 0,
+            "tags": [
+                "python",
+                "excel",
+                "pandas",
+                "csv",
+                "streamlit"
+            ],
+            "title": "Changing column names based on several possibilities of what the original column names could be (pandas)",
+            "view_count": 35
+        },
+        {
+            "answer_count": 2,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041925,
+            "is_answered": false,
+            "last_activity_date": 1654074044,
+            "last_edit_date": 1654041958,
+            "link": "https://stackoverflow.com/questions/72455216/integration-of-front-end-and-backend",
+            "owner": {
+                "account_id": 20108969,
+                "display_name": "David Fong",
+                "link": "https://stackoverflow.com/users/14745775/david-fong",
+                "profile_image": "https://lh4.googleusercontent.com/-6F2WQZ_MdJQ/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucmVcf-7Fxu16f2fq-P0NkHejztmmQ/s96-c/photo.jpg?sz=256",
+                "reputation": 3,
+                "user_id": 14745775,
+                "user_type": "registered"
+            },
+            "question_id": 72455216,
+            "score": 0,
+            "tags": [
+                "reactjs",
+                "django",
+                "react-fullstack"
+            ],
+            "title": "Integration of Front End and Backend",
+            "view_count": 44
+        },
+        {
+            "accepted_answer_id": 72456233,
+            "answer_count": 1,
+            "content_license": "CC BY-SA 4.0",
+            "creation_date": 1654041957,
+            "is_answered": true,
+            "last_activity_date": 1654189025,
+            "last_edit_date": 1654189025,
+            "link": "https://stackoverflow.com/questions/72455219/react-native-scrollview-is-not-scrolling",
+            "owner": {
+                "account_id": 5068024,
+                "display_name": "Jerry310",
+                "link": "https://stackoverflow.com/users/4067616/jerry310",
+                "profile_image": "https://www.gravatar.com/avatar/a06d416b0764783b7d00653f33a09506?s=256&d=identicon&r=PG&f=1",
+                "reputation": 91,
+                "user_id": 4067616,
+                "user_type": "registered"
+            },
+            "question_id": 72455219,
+            "score": 0,
+            "tags": [
+                "javascript",
+                "react-native",
+                "react-native-stylesheet"
+            ],
+            "title": "React native ScrollView is not scrolling",
+            "view_count": 57
+        }
+    ]
+}
