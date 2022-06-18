@@ -3,9 +3,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time
 from dataclasses import dataclass
+from typing import List
 
 options = Options()
 options.add_argument('--headless')
+
 
 @dataclass
 class Whiskey:
@@ -16,67 +18,97 @@ class Whiskey:
     alcohol_by_volume: float
     bottle_price: float
     Description: str
-    Style: dict = {'Body': int, 'Richness': int, 'Smoke': int, 'Sweetness': int}
-    Character: list = []
+    Style: dict
+    Character: list
 
-
-# structure of data: {'whiskeys':{'example_whiskey_name':{'example_attribute': 'example_value'}}, 'number_of_whiskeys': <number of whiskeys added>}
 
 class Scraper():
     
-    driver = webdriver.Chrome(options=options)
-    URL = 'https://www.thewhiskyexchange.com/d/872/top-10-whiskies'
-    driver.get(URL)
-    time.sleep(1)
-    accept_cookies = driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]').click()
-
-    def __init__():
+    def __init__(self) -> None:
         pass
 
-    def get_name():
-        whiskey_name = whiskey_item_list.find_elements(By.XPATH, './div/header/h2[@class="top10-product__name"]')
+    def load_and_accept_cookies(self):
+        self.driver = webdriver.Chrome(options=options)
+        URL = 'https://www.thewhiskyexchange.com/brands/scotchwhisky/40/single-malt-scotch-whisky'
+        self.driver.get(URL)
+        time.sleep(2)
+        try: 
+            accept_cookies = self.driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]')
+            accept_cookies.click()
+            
+        except:
+            pass
+        time.sleep(3)
 
-    def get_type():
+     # Methods to crawl through website
+    def get_whiskey_href_list(self):
+        az_item_links = self.driver.find_elements(By.XPATH, '//*[@class="az-item-link"]')
+        
+        whiskey_brand_href_list = []
+        for az_item_link in az_item_links:
+            whiskey_href = az_item_link.get_attribute('href')
+            whiskey_brand_href_list.append(whiskey_href)
+
+        return whiskey_brand_href_list
+
+    def go_to_letter(letter):
+        URL = URL + f'#goto-{letter}'
+
+    def scroll_to_bottom(self):
+        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         pass
 
-    def get_link():
-        pass
+    def scraper_quit(self):
+        self.driver.close()
+        self.driver.quit()
 
-    def get_alcohol_by_volume():
-        pass
+    def run(self):
+        self.load_and_accept_cookies()
+        self.get_whiskey_href_list()
+        self.scraper_quit()
 
-    def get_bottle_price():
-        pass
-
-    def get_description():
-        pass
-
-    def get_style():
-        pass    
+if __name__ == '__main__':
+    scraperinstance = Scraper()
+    scraperinstance.run()
+    print(scraperinstance.get_whiskey_href_list())
+    print(len(scraperinstance.get_whiskey_href_list()))
     
-    def get_character():
-        pass
 
 
-whiskey_data = {'whiskeys':{}, 'number_of_whiskeys': 0}
-top10_container = driver.find_element(By.XPATH, '//ul[@class="top10-list"]')
 
-whiskey_item_list = top10_container.find_elements(By.XPATH, './li[@class="top10-list__item"]')
-num_whiskey = len(whiskey_item_list)
-
-for i in range(num_whiskey):
-    
-    
-    whiskey_name = whiskey.text
-    whiskey_data['whiskeys'].update({whiskey_name: {}})
-    whiskey_data['number_of_whiskeys'] += 1
     
 
-whiskey_type_list = top10_container.find_elements(By.XPATH, './li/div/header/h2[@class="top10-product__name"]')
+    
 
 
 
-driver.quit()
+# methods to retrieve data
+
+    # def get_name():
+    #     whiskey_name = whiskey_item_list.find_elements(By.XPATH, './div/header/h2[@class="top10-product__name"]')
+
+    # def get_type():
+    #     pass
+
+    # def get_link():
+    #     pass
+
+    # def get_alcohol_by_volume():
+    #     pass
+
+    # def get_bottle_price():
+    #     pass
+
+    # def get_description():
+    #     pass
+
+    # def get_style():
+    #     pass    
+    
+    # def get_character():
+    #     pass
+
+
 
 
     
