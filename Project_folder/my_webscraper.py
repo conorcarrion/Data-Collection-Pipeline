@@ -1,3 +1,4 @@
+from pyrsistent import b
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -17,9 +18,9 @@ class Whiskey:
     link: str
     alcohol_by_volume: float
     bottle_price: float
-    Description: str
-    Style: dict
-    Character: list
+    description: str
+    style: dict
+    character: list
 
 
 class Scraper():
@@ -41,7 +42,7 @@ class Scraper():
         time.sleep(3)
 
      # Methods to crawl through website
-    def get_whiskey_href_list(self):
+    def get_whiskey_url_list(self):
         az_item_links = self.driver.find_elements(By.XPATH, '//*[@class="az-item-link"]')
         
         whiskey_brand_href_list = []
@@ -51,8 +52,58 @@ class Scraper():
 
         return whiskey_brand_href_list
 
-    def go_to_letter(letter):
-        URL = URL + f'#goto-{letter}'
+    def get_full_whiskey_url_list(self, url_list):
+        with open('full_whiskey_url_list.text', 'w') as l:
+            pass
+        for whiskey_url in url_list:
+            self.driver.get(whiskey_url)
+            time.sleep(1)
+            product_cards = self.driver.find_elements(By.XPATH, '//*[@class="product-card"]')
+            full_whiskey_url_list = []
+
+            for product_card in product_cards:
+                whiskey_href = product_card.get_attribute('href')
+                domain = 'https://thewhiskeyexchange.com'
+                
+                with open('full_whiskey_url_list.text', 'a') as l:    
+                    l.write(f'{whiskey_href}')
+                    l.write('\n')
+                full_whiskey_url_list.append(whiskey_href)
+
+        return full_whiskey_url_list
+
+    def get_whiskey_profile(self, list_of_whiskey_urls):
+        for whiskey_url in list_of_whiskey_urls:
+            self.driver.get(whiskey_url)
+            time.sleep(1)
+            name = self.driver.find_element(By.XPATH, '//h1[@class="product-main__name"').text
+            subname = self.driver.find_element(By.XPATH, '//h1[@class="product-main__sub-name"').text
+            main_data = self.driver.find_element(By.XPATH, '//p[@class="product-main-data"').text
+            main_data_tuple = main_data.split(' / ')
+            contents_liquid_volume = main_data_tuple[0]
+            alcohol_by_volume = main_data_tuple[1]
+            facts = self.driver.find_elements(By.XPATH, '//li[@class="product-facts__item"')
+            facts_dict = {}
+            for fact in facts:
+                fact_type = fact.find_element(By.XPATH, './p[@class="product-facts__type"').text
+                fact_
+
+            flavour_profile = fact.
+
+
+
+            type = self.driver.find_element(By.XPATH, '//h1[@class="product-main__name"').text
+            link = self.driver.find_element(By.XPATH, '//h1[@class="product-main__name"').text
+            
+            price = self.driver.find_element(By.XPATH, '//h1[@class="product-main__name"').text
+            description = self.driver.find_element(By.XPATH, '//h1[@class="product-main__name"').text
+            
+            Character: list
+
+
+            whiskey = Whiskey()
+
+
 
     def scroll_to_bottom(self):
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -64,14 +115,16 @@ class Scraper():
 
     def run(self):
         self.load_and_accept_cookies()
-        self.get_whiskey_href_list()
+        whiskey_url_list = self.get_whiskey_url_list()
+        full_whiskey_url_list = self.get_full_whiskey_url_list(whiskey_url_list)
+        
+        print(len(full_whiskey_url_list))
         self.scraper_quit()
 
 if __name__ == '__main__':
     scraperinstance = Scraper()
     scraperinstance.run()
-    print(scraperinstance.get_whiskey_href_list())
-    print(len(scraperinstance.get_whiskey_href_list()))
+    
     
 
 
