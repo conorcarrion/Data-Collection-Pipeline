@@ -128,16 +128,15 @@ class Scraper():
         whisky.price = self.driver.find_element(By.XPATH, '//*[@class="product-action__price"]').text
 
         whisky.description = self.driver.find_element(By.XPATH, '//*[@class="product-main__description"]').text
-        # whisky.description = description_tag.find_element(By.CLASS_NAME, 'p').text
-
+        
         # facts section
         facts = self.driver.find_elements(By.XPATH, '//*[@class="product-facts__item"]')
         whisky.facts= {}
         for fact in facts:
-            fact_key = fact.find_element(By.XPATH, './h4[@class="product-facts__type"]').text
-            print(fact_key)
-            fact_value = fact.find_element(By.XPATH, './p[@class="product-facts__data"]').text
-            print(fact_value)
+            fact_key_element = fact.find_element(By.XPATH, './h4[@class="product-facts__type"]')
+            fact_key = fact_key_element.get_attribute('innerText')
+            fact_value_element = fact.find_element(By.XPATH, './p[@class="product-facts__data"]')
+            fact_value = fact_value_element.get_attribute('innerText')
             whisky.facts[fact_key] = fact_value
 
         # flavour profile section
@@ -156,7 +155,6 @@ class Scraper():
             flavour_character = flavour.find_element(By.XPATH, './span[@class="flavour-profile__label"]').text
             whisky.flavour_character.append(flavour_character)
 
-        whisky.facts['test'] = 'test'
         return (whisky)
 
     # Method to pull individual url strings from the mass url file
