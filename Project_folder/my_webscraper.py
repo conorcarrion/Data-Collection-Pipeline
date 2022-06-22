@@ -1,14 +1,13 @@
 ### Start of my code for Webscraper by Conor Quinn ###
 
 # Import
-from types import NoneType
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 import time
 from dataclasses import dataclass
-from typing import List
-
 
 
 # dataclass for whisky
@@ -18,16 +17,14 @@ class Whisky:
     name: str = None
     subname: str = None
     product_id: str = None
-    type: str = None
-    whisky_url: str = None
     contents_liquid_volume: str = '0cl'
     alcohol_by_volume: str = '0%'
-    bottle_price: str = '£0'
+    price: str = '£0'
     description: str = 'tasteless'
     facts: dict = None
     flavour_style: dict = None
     flavour_character: list = None
-    character: list = None
+    
 
 # Scraper Object with methods to control it
 class Scraper():
@@ -90,12 +87,18 @@ class Scraper():
     # Method to iterate through every whisky url in the list of whisky urls provided 
     def get_all_whisky_profiles(self, list_of_whisky_urls):
         # Iterate through every whisky url in the list_of_whisky_urls
-        master_whisky_list = []
+        main_whisky_list = []
         for whisky_url in list_of_whisky_urls:
             whisky = Whisky()
-            self.get_a_whisky_profile(whisky_url, whisky)
-            master_whisky_list.append(dict(whisky))
+            whisky = self.get_a_whisky_profile(whisky_url, whisky)
 
+            whiskydict = whisky.__dict__
+            with open('testing.text', 'a') as t:
+                
+                t.write(f'{whisky}')
+            main_whisky_list.append(whiskydict)
+        
+        return main_whisky_list            
             
 
     # Method to get the profile of a whisky product from the URL provided
@@ -107,42 +110,54 @@ class Scraper():
         # fetch details of the whisky
         # basics
 
-        whisky.name = self.driver.find_element(By.XPATH, '//h1[@class="product-main__name"')
-        whisky.subname = self.driver.find_element(By.XPATH, '//h1[@class="product-main__sub-name"')
-        whisky.product_id = self.driver.find_element(By.XPATH, '//input-id[@value="18089"') # TODO
-        main_data = self.driver.find_element(By.XPATH, '//p[@class="product-main-data"')
+        whisky.name = self.driver.find_element(By.XPATH, '//*[@class="product-main__name"]').text
+        try:
+            whisky.subname = self.driver.find_element(By.XPATH, '//*[@class="product-main__sub-name"]').text
+        except NoSuchElementException:
+            pass
+        
+        whisky.product_id = url.split('/')[-2]
+        main_data = self.driver.find_element(By.XPATH, '//*[@class="product-main__data"]').text
         main_data_tuple = main_data.split(' / ')
         whisky.contents_liquid_volume = main_data_tuple[0]
         whisky.alcohol_by_volume = main_data_tuple[1]
 
-        whisky.price = self.driver.find_element(By.XPATH, '//*[@class="product-action__price"')
+        whisky.price = self.driver.find_element(By.XPATH, '//*[@class="product-action__price"]').text
 
-        description_tag = self.driver.find_element(By.XPATH, '//*[@class="product-main__description"')
-        whisky.description = description_tag.find_element(By.CLASS_NAME, 'p')
+        whisky.description = self.driver.find_element(By.XPATH, '//*[@class="product-main__description"]').text
+        # whisky.description = description_tag.find_element(By.CLASS_NAME, 'p').text
 
         # facts section
-        facts = self.driver.find_elements(By.XPATH, '//*[@class="product-facts__item"')
-        whisky.facts_dict = {}
+        facts = self.driver.find_elements(By.XPATH, '//*[@class="product-facts__item"]')
+        whisky.facts= {}
         for fact in facts:
-            fact_key = fact.find_element(By.TAG_NAME, 'h4')
-            fact_value= fact.find_element(By.TAG_NAME, 'p')
-            whisky.facts_dict[fact_key] = fact_value
+            
+            fact_key = fact.find_element(By.XPATH, './h4[@class="product-facts__type"]').text
+            fact_value= fact.find_element(By.XPATH, './p[@class="product-facts__data"]').text
+            whisky.facts[fact_key] = fact_value
 
         # flavour profile section
-        flavour_profile_style = self.driver.find_elements(By.XPATH, '//li[@class="flavour-profile__item flavour-profile__item--style"')
-        whisky.flavour_style_dict = {}
+        flavour_profile_style = self.driver.find_elements(By.XPATH, '//li[@class="flavour-profile__item flavour-profile__item--style"]')
+        whisky.flavour_style = {}
         for flavour in flavour_profile_style:
-            flavour_style_value = flavour.find_element(By.XPATH, '//span[@class="circle-text-content"')
-            flavour_style_key = flavour.find_element(By.XPATH, '//span[@class="flavour-profile__label"')
-            whisky.flavour_style_dict[flavour_style_key] = flavour_style_value
+            
+            flavour_style_value = flavour.find_element(By.XPATH, './/span[@class="circle-text-content"]').text
+            flavour_style_key = flavour.find_element(By.XPATH, './/span[@class="flavour-profile__label"]').text
+            whisky.flavour_style[flavour_style_key] = flavour_style_value
 
-        flavour_profile_character = self.driver.find_elements(By.XPATH, '//li[@class="flavour-profile__item flavour-profile__item--character"')
-        whisky.flavour_character_list = []
+        flavour_profile_character = self.driver.find_elements(By.XPATH, '//li[@class="flavour-profile__item flavour-profile__item--character"]')
+        whisky.flavour_character = []
         for flavour in flavour_profile_character:
-            flavour_character = flavour.find_element(By.XPATH, '//span[@class="flavour-profile__label"')
-            whisky.flavour_character_list.append(flavour_character)
+            
+            flavour_character = flavour.find_element(By.XPATH, './span[@class="flavour-profile__label"]').text
+            whisky.flavour_character.append(flavour_character)
 
         return (whisky)
+
+    def read_whisky_list_from_text(text):
+        with open('full_whisky_url_list.text', 'r') as l:
+            full_whisky_list = l.read().split('\n')
+        return full_whisky_list
 
 
     # a function to scroll to the bottom of the page
@@ -158,9 +173,6 @@ class Scraper():
     # main method to run the scraper
     def run(self):
         self.load_and_accept_cookies()
-        whisky_url_list = self.get_whisky_url_list()
-        full_whisky_url_list = self.get_full_whisky_url_list(whisky_url_list)
-
         sample_list = ['https://www.thewhiskyexchange.com/p/19204/talisker-storm', 'https://www.thewhiskyexchange.com/p/43962/port-charlotte-10-year-old']
         self.get_all_whisky_profiles(sample_list)
         self.scraper_quit()
