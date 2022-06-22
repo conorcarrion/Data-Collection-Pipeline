@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 
 # dataclass for whisky
-@dataclass
+@dataclass(repr=True)
 class Whisky:
     """Class for detailing attributes of a whisky."""
     name: str = None
@@ -50,7 +50,8 @@ class Scraper():
             pass
         time.sleep(2)
 
-     # Scraping methods
+
+# Scraping methods #
 
      # Method to fetch all the brands of whisky from main page into a url list
     def get_whisky_url_list(self):
@@ -88,16 +89,18 @@ class Scraper():
     def get_all_whisky_profiles(self, list_of_whisky_urls):
         # Iterate through every whisky url in the list_of_whisky_urls
         main_whisky_list = []
+        with open('testing.text', 'w') as l:
+            pass
         for whisky_url in list_of_whisky_urls:
             whisky = Whisky()
             whisky = self.get_a_whisky_profile(whisky_url, whisky)
 
             whiskydict = whisky.__dict__
             with open('testing.text', 'a') as t:
-                
-                t.write(f'{whisky}')
+                t.write(str(whiskydict))
+                t.write('\n')
             main_whisky_list.append(whiskydict)
-        
+               
         return main_whisky_list            
             
 
@@ -131,9 +134,10 @@ class Scraper():
         facts = self.driver.find_elements(By.XPATH, '//*[@class="product-facts__item"]')
         whisky.facts= {}
         for fact in facts:
-            
             fact_key = fact.find_element(By.XPATH, './h4[@class="product-facts__type"]').text
-            fact_value= fact.find_element(By.XPATH, './p[@class="product-facts__data"]').text
+            print(fact_key)
+            fact_value = fact.find_element(By.XPATH, './p[@class="product-facts__data"]').text
+            print(fact_value)
             whisky.facts[fact_key] = fact_value
 
         # flavour profile section
@@ -152,25 +156,27 @@ class Scraper():
             flavour_character = flavour.find_element(By.XPATH, './span[@class="flavour-profile__label"]').text
             whisky.flavour_character.append(flavour_character)
 
+        whisky.facts['test'] = 'test'
         return (whisky)
 
+    # Method to pull individual url strings from the mass url file
     def read_whisky_list_from_text(text):
         with open('full_whisky_url_list.text', 'r') as l:
             full_whisky_list = l.read().split('\n')
         return full_whisky_list
 
 
-    # a function to scroll to the bottom of the page
+    # Method to scroll to the bottom of the page
     def scroll_to_bottom(self):
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         pass
 
-    # basic shutdown function
+    # Method to do basic shutdown
     def scraper_quit(self):
         self.driver.close()
         self.driver.quit()
 
-    # main method to run the scraper
+    # main execution method
     def run(self):
         self.load_and_accept_cookies()
         sample_list = ['https://www.thewhiskyexchange.com/p/19204/talisker-storm', 'https://www.thewhiskyexchange.com/p/43962/port-charlotte-10-year-old']
