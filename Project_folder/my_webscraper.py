@@ -2,12 +2,17 @@
 
 # Import
 
+from unicodedata import decimal
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 import time
 from dataclasses import dataclass
+import json
+from re import sub
+
+
 
 
 # dataclass for whisky
@@ -19,7 +24,7 @@ class Whisky:
     product_id: str = None
     contents_liquid_volume: str = '0cl'
     alcohol_by_volume: str = '0%'
-    price: str = '£0'
+    price: float = 0
     description: str = 'tasteless'
     facts: dict = None
     flavour_style: dict = None
@@ -89,16 +94,16 @@ class Scraper():
     def get_all_whisky_profiles(self, list_of_whisky_urls):
         # Iterate through every whisky url in the list_of_whisky_urls
         main_whisky_list = []
-        with open('testing.text', 'w') as l:
+        with open('testing.json', 'w') as l:
             pass
         for whisky_url in list_of_whisky_urls:
             whisky = Whisky()
             whisky = self.get_a_whisky_profile(whisky_url, whisky)
 
             whiskydict = whisky.__dict__
-            with open('testing.text', 'a') as t:
-                t.write(str(whiskydict))
-                t.write('\n')
+            with open('testing.json', 'a') as outfile:
+                json.dump(whiskydict, outfile, indent=4)
+                
             main_whisky_list.append(whiskydict)
                
         return main_whisky_list            
@@ -125,7 +130,9 @@ class Scraper():
         whisky.contents_liquid_volume = main_data_tuple[0]
         whisky.alcohol_by_volume = main_data_tuple[1]
 
-        whisky.price = self.driver.find_element(By.XPATH, '//*[@class="product-action__price"]').text
+        price = self.driver.find_element(By.XPATH, '//*[@class="product-action__price"]').text
+        whisky.price = float(price[1:])
+
 
         whisky.description = self.driver.find_element(By.XPATH, '//*[@class="product-main__description"]').text
         
