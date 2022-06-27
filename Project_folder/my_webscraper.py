@@ -194,7 +194,7 @@ class Scraper:
             with open('test.json', 'a') as outfile:
                 json.dump(spiritdict, outfile, indent=4)
                 
-            main_spirit_list.append(spiritdict)
+        
 
     # Method to scroll to the bottom of the page
     def scroll_to_bottom(self):
