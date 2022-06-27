@@ -26,34 +26,4 @@
         "OAK",
         "STEWED FRUIT"
     ]
-}{
-    "name": "Port Charlotte 10 Year Old",
-    "subname": null,
-    "product_id": "43962",
-    "contents_liquid_volume": "70cl",
-    "alcohol_by_volume": "50%",
-    "price": 52.75,
-    "description": "Port Charlotte's long-awaited 10 year old, rich and smoky whisky made by the independently minded folks at Bruichladdich distillery on Islay. PC, as it's known to its friends, is heavily peated to 40ppm, putting it up with Islay's other heavy hitters. The resulting whisky is big and peaty with a maritime tang \u2013 the Bruichladdich team would claim that it's because their warehouses are so close to the sea, we're still undecided. In the end, the most important thing is the taste: it's rather good.\nTASTING NOTES (1)\nPlease note\nPort Charlotte 10 Year Old has been crowned our Whisky of the Year 2021 - many thanks to everyone who voted!",
-    "facts": {
-        "Bottler": "Distillery Bottling",
-        "Age": "10 Year Old",
-        "Country": "Scotland",
-        "Region": "Islay",
-        "Chill Filtered": "No",
-        "Colouring": "No"
-    },
-    "flavour_style": {
-        "BODY": "4",
-        "RICHNESS": "4",
-        "SMOKE": "4",
-        "SWEETNESS": "1"
-    },
-    "flavour_character": [
-        "SALT (POWDER)",
-        "IODINE (TCP)",
-        "SEAWEED",
-        "SMOKE",
-        "CREAM",
-        "CARBOLIC SOAP"
-    ]
 }

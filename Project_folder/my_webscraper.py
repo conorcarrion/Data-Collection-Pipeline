@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import json
 from re import sub
 import uuid
-
+import os
 
 @dataclass(repr=True)
 class Spirit:
@@ -20,6 +20,7 @@ class Spirit:
     # """dataclass for detailing attributes of a Spirit."""
 
     name: str = None
+    brand_name = str = None
     subname: str = None
     product_id: str = None
     product_uuid: str = None
@@ -32,22 +33,7 @@ class Spirit:
     flavour_character: list = None
     
 
-class DataCollector:
 
-    def __init__(self) -> None:
-        pass
-
-    def activate_scraper():
-        pass
-
-    def activate_filemanager():
-        pass
-
-    def activate_cloudstorage():
-        pass
-
-    def activate_analyzer():
-        pass
 
 
 # Scraper Object with methods to control it
@@ -64,7 +50,7 @@ class Scraper:
         
 
     # Start up selenium webdriver with options. Open main page and accept cookies. 
-    def load_and_accept_cookies(self):
+    def accept_cookies(self):
         try: 
             accept_cookies = self.driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]')
             accept_cookies.click()
@@ -76,49 +62,17 @@ class Scraper:
 # Scraping methods #
 
      # Method to fetch all the brandnames and their urls from the provided main page
-    def get_brand_url_list(self):
-        az_item_links = self.driver.find_elements(By.XPATH, '//*[@class="az-item-link"]')
+    def get_url_list(self):
+        product_cards = self.driver.find_elements(By.XPATH, '//*[@class="product-card"]')
                
-        spirit_brand_url_list = []
-        spirit_brand_name_list = []
-        FileManager.make_output_text_file(spirit_brand_name_list)
-        FileManager.make_output_text_file(spirit_brand_url_list)
-
-        for az_item_link in az_item_links:
-            
-            spirit_brandname = az_item_link.find_element(By.XPATH, './span[@class="az-item-name"]').text
-            spirit_brand_name_list.append(spirit_brandname)
-
-            spirit_url = az_item_link.get_attribute('href')
-            spirit_brand_url_list.append(spirit_url)
-            FileManager.append_to_text_file(spirit_brandname, spirit_brand_name_list)
-            FileManager.append_to_text_file(spirit_url, spirit_brand_url_list)
-
-        return spirit_brandname, spirit_brand_url_list
-
-    
-
-    # Method to fetch the urls for individual products from the urls obtained by get_spirit_url_list
-    def get_url_list_of_lists(self, spirit_brand_url_list):
+        spirit_url_list = []
         
-        url_list_of_lists = [] # list of lists, with a list of each whisky product in a list of each whiskey brand
-        FileManager.make_output_text_file(url_list_of_lists)
-
-        for spirit_url in spirit_brand_url_list:
-            self.driver.get(spirit_url)
-            time.sleep(0.5)
-            product_cards = self.driver.find_elements(By.XPATH, '//*[@class="product-card"]')
-
-            spirit_product_list = []
-            for product_card in product_cards:
-                spirit_url = product_card.get_attribute('href')
-                spirit_product_list.append(spirit_url)
-
-            url_list_of_lists.append(spirit_product_list)
-            FileManager.append_to_text_file(spirit_product_list, url_list_of_lists)
-
-        return url_list_of_lists
-
+        for product in product_cards:
+            
+            spirit_url = product.get_attribute('href')
+            spirit_url_list.append(spirit_url)
+            
+        return spirit_url_list
     
     # Method to get the profile of a spirit product from the URL provided
     def get_a_spirit_profile(self, url, spirit):
@@ -134,6 +88,8 @@ class Scraper:
             spirit.subname = self.driver.find_element(By.XPATH, '//*[@class="product-main__sub-name"]').text
         except NoSuchElementException:
             pass
+
+        spirit.brand_name = spirit.name.split(' ')[0]
         
         spirit.product_id = url.split('/')[-2]
         spirit.product_uuid = str(uuid.uuid4())
@@ -179,69 +135,91 @@ class Scraper:
 
         return (spirit)
 
-  
- # Method to iterate through every spirit url in the list of spirit urls provided 
-    def get_all_spirit_profiles(self, list_of_spirit_urls): # TODO
-        
-        
-        FileManager.make_output_text_file('data.json')
-
-        for spirit_url in list_of_spirit_urls:
-            spirit = Spirit()
-            spirit = self.get_a_spirit_profile(spirit_url, spirit)
-
-            spiritdict = spirit.__dict__
-            with open('test.json', 'a') as outfile:
-                json.dump(spiritdict, outfile, indent=4)
-                
-        
-
-    # Method to scroll to the bottom of the page
-    def scroll_to_bottom(self):
-        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        pass
-
+ 
     # Method to do basic shutdown
     def scraper_quit(self):
         self.driver.close()
         self.driver.quit()
 
-    # main execution method
-    def run(self):
-        self.load_and_accept_cookies()
-        # self.get_brand_url_list() - 
-        sample_list = ['https://www.thespiritexchange.com/p/19204/talisker-storm', 'https://www.thespiritexchange.com/p/43962/port-charlotte-10-year-old']
-        self.get_all_spirit_profiles(sample_list)
-        self.scraper_quit()
-
 
 class FileManager:
 
-    def make_output_text_file(outfile_name):
-        with open(f'{outfile_name}.text', 'w') as l:
+    # Take a list variable and a name for the file and create/overwrite the file then add contents as a list with line breaks
+    def output_list_to_text_file(url_list, name_of_file):
+        with open(f'{name_of_file}.text', 'w') as l:
             pass
 
-    def append_to_text_file(input, outfile_name):
-        with open(f'{outfile_name}.text', 'a') as l:    
-            l.write(f'{input}')
-            l.write('\n')
+        with open(f'{name_of_file}.text', 'a') as l:
+            for url in url_list:
+                l.write(url)
+                l.write('\n')
 
-    # Method to create the subfolders based on brand/distillery name
-    def create_brandname_folder(self, brand):
+    # make file called 'input' and put in the contents of 'input' as json file
+    def output_spirit_to_data_file(input):
         Path(
-            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{brand}'
+            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{input.brand_name}'
             ).mkdir(parents=True, exist_ok=True)
+        filepath = os.path.join(input.brand_name, input.product_uuid)
+        with open(f'{filepath}.json', 'w') as outfile:
+            pass
+        
+        with open(f'{filepath}.json', 'a') as outfile:
+            json.dump(input, outfile, indent=4)
+           
+    # convert the contents of a line break separated text file at 'file path' to a Python List       
+    def unpack_text_to_python_list(file_path):
+        with open(file_path, 'r') as file:
+            url_list_content = file.read()
+            url_list = json.loads(url_list_content.replace('\'', '"'))
+            
+        return url_list
 
-      # Method to pull individual url strings from the mass url file
-    def read_spirit_list_from_text(text):
-        with open(text, 'r') as l:
-            full_spirit_list = l.read().split('\n')
-        return full_spirit_list
+    # unpack a json dictionary file and return it to 
+    def unpack_json_file(json_file_path):
+        with open(json_file_path, 'r') as data:
+            content = data.read()
+            unpacked_list = json.loads(content)
+        return unpacked_list
+
+
+class DataCollector():
+
+    sample_list = ['https://www.thespiritexchange.com/p/19204/talisker-storm', 'https://www.thespiritexchange.com/p/43962/port-charlotte-10-year-old']
+
+    def __init__(self) -> None:
+        pass
+
+    def get_url_list():
+        Scraper.accept_cookies
+        scraper_url_list = Scraper.get_url_list
+        FileManager.output_list_to_text_file(scraper_url_list)
+
+        
+    # Method to iterate through every spirit url in the list of spirit urls provided 
+    def get_all_spirit_profiles(self, list_of_spirit_urls):
+        if os.path.exists('full_whisky_url_list.text'):
+            with open('full_whisky_url_list', 'r') as outfile:
+
+                for spirit_url in list_of_spirit_urls:
+                    spirit = Spirit()
+                    spirit_profile = Scraper.get_a_spirit_profile(spirit_url, spirit)
+                    spiritdict = spirit_profile.__dict__
+                    FileManager.create_brandname_folder(spirit.brand_name)
+                    FileManager.output_to_data_file(spiritdict)
+
+    
+
+    def activate_cloudstorage():
+        pass
+
+    def activate_analyzer():
+        pass
+
 
 
 # Boilerplate code to stop funny things happening when you import or something
 if __name__ == '__main__':
-    mainpage_url = 'https://www.thespiritexchange.com/brands/scotchspirit/40/single-malt-scotch-spirit'
+    mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?psize=2500&sort=nasc'
     scraperinstance = Scraper(mainpage_url)
     scraperinstance.run()
     
