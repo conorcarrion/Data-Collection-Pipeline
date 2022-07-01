@@ -2,7 +2,6 @@
 
 # Import
 from pathlib import Path
-from unicodedata import decimal
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -10,9 +9,9 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 from dataclasses import dataclass
 import json
-from re import sub
 import uuid
 import os
+
 
 @dataclass(repr=True)
 class Spirit:
@@ -33,9 +32,6 @@ class Spirit:
     flavour_character: list = None
     
 
-
-
-
 # Scraper Object with methods to control it
 
 class Scraper:
@@ -44,19 +40,22 @@ class Scraper:
         # selenium webdriver setup
         options = Options()
         options.add_argument('--headless')
-        self.driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Chrome()
         self.driver.get(mainpage_url)
+        self.mainpage = mainpage_url.split('.com/')[-1]
         time.sleep(1.5)
         
-
+        
     # Start up selenium webdriver with options. Open main page and accept cookies. 
     def accept_cookies(self):
-        try: 
+        # try: 
             accept_cookies = self.driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]')
             accept_cookies.click()
-        except:
-            pass
-        time.sleep(1.5)
+            print('cookies accepted')
+        # except:
+        #     pass
+        #     print('bailed on this')
+        # time.sleep(1.5)
 
 
 # Scraping methods #
@@ -82,7 +81,7 @@ class Scraper:
 
         # fetch details of the spirit
         # basics
-
+        
         spirit.name = self.driver.find_element(By.XPATH, '//*[@class="product-main__name"]').text
         try:
             spirit.subname = self.driver.find_element(By.XPATH, '//*[@class="product-main__sub-name"]').text
@@ -108,7 +107,9 @@ class Scraper:
         # facts section
         facts = self.driver.find_elements(By.XPATH, '//*[@class="product-facts__item"]')
         spirit.facts= {}
+
         for fact in facts:
+
             fact_key_element = fact.find_element(By.XPATH, './h4[@class="product-facts__type"]')
             fact_key = fact_key_element.get_attribute('innerText')
             fact_value_element = fact.find_element(By.XPATH, './p[@class="product-facts__data"]')
@@ -119,6 +120,7 @@ class Scraper:
         # style is a dictionary with numbers 1-5 for keys: Body Richness Smoke Sweetness
         flavour_profile_style = self.driver.find_elements(By.XPATH, '//li[@class="flavour-profile__item flavour-profile__item--style"]')
         spirit.flavour_style = {}
+
         for flavour in flavour_profile_style:
             
             flavour_style_value = flavour.find_element(By.XPATH, './/span[@class="circle-text-content"]').text
@@ -141,25 +143,71 @@ class Scraper:
         self.driver.close()
         self.driver.quit()
 
+    def create_url_list_text_file(self):
+        
+        url_list = self.get_url_list()
+        FileManager.output_list_to_text_file(url_list, self.mainpage)
+        return url_list
+
+    def dupe_scrape_check(self):
+        page_scrape_file = os.path.join('raw_data', self.mainpage, f'{self.mainpage}.text')
+        if os.path.exists(page_scrape_file):
+            url_list = FileManager.unpack_text_to_python_list(page_scrape_file)
+            print(page_scrape_file)
+            return url_list
+        else:
+            url_list = self.create_url_list_text_file()
+            return url_list
+
+    # Method to iterate through every spirit url in the list of spirit urls provided 
+    def get_x_spirit_profiles(self, list_of_spirit_urls, x=100):
+        y = 0
+        for spirit_url in list_of_spirit_urls:
+            spirit = Spirit()
+            spirit_profile = self.get_a_spirit_profile(spirit_url, spirit)
+            spiritdict = spirit_profile.__dict__
+            FileManager.output_spirit_to_data_file(spiritdict, self.mainpage)
+            y += 1
+            if y == x:
+                break
+
+
+    def activate_cloudstorage():
+        pass
+
+    def activate_analyzer():
+        pass
+
+    def run(self, x):
+        self.accept_cookies()
+        url_list = self.dupe_scrape_check()
+        self.get_x_spirit_profiles(url_list, x)
+        self.scraper_quit()
 
 class FileManager:
 
     # Take a list variable and a name for the file and create/overwrite the file then add contents as a list with line breaks
-    def output_list_to_text_file(url_list, name_of_file):
-        with open(f'{name_of_file}.text', 'w') as l:
+    def output_list_to_text_file(url_list, mainpage):
+        mainpage_underscore= mainpage.replace('/', '_')
+        Path(
+            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{mainpage_underscore}'
+            ).mkdir(parents=True, exist_ok=True)
+        filepath = os.path.join('raw_data', mainpage_underscore, mainpage_underscore)
+        with open(f'{filepath}.text', 'w') as l:
             pass
 
-        with open(f'{name_of_file}.text', 'a') as l:
+        with open(f'{filepath}.text', 'a') as l:
             for url in url_list:
                 l.write(url)
                 l.write('\n')
 
     # make file called 'input' and put in the contents of 'input' as json file
-    def output_spirit_to_data_file(input):
+    def output_spirit_to_data_file(input, mainpage):
+        mainpage_underscore= mainpage.replace('/', '_')
         Path(
-            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{input.brand_name}'
+            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{mainpage_underscore}/{input.brand_name}'
             ).mkdir(parents=True, exist_ok=True)
-        filepath = os.path.join(input.brand_name, input.product_uuid)
+        filepath = os.path.join('raw_data', mainpage_underscore, input.brand_name, input.product_uuid)
         with open(f'{filepath}.json', 'w') as outfile:
             pass
         
@@ -170,7 +218,7 @@ class FileManager:
     def unpack_text_to_python_list(file_path):
         with open(file_path, 'r') as file:
             url_list_content = file.read()
-            url_list = json.loads(url_list_content.replace('\'', '"'))
+            url_list = url_list_content.split('\n')
             
         return url_list
 
@@ -178,49 +226,19 @@ class FileManager:
     def unpack_json_file(json_file_path):
         with open(json_file_path, 'r') as data:
             content = data.read()
-            unpacked_list = json.loads(content)
-        return unpacked_list
+            unpacked_dict = json.loads(content)
+        return unpacked_dict
 
 
-class DataCollector():
-
-    sample_list = ['https://www.thespiritexchange.com/p/19204/talisker-storm', 'https://www.thespiritexchange.com/p/43962/port-charlotte-10-year-old']
-
-    def __init__(self) -> None:
-        pass
-
-    def get_url_list():
-        Scraper.accept_cookies
-        scraper_url_list = Scraper.get_url_list
-        FileManager.output_list_to_text_file(scraper_url_list)
 
         
-    # Method to iterate through every spirit url in the list of spirit urls provided 
-    def get_all_spirit_profiles(self, list_of_spirit_urls):
-        if os.path.exists('full_whisky_url_list.text'):
-            with open('full_whisky_url_list', 'r') as outfile:
 
-                for spirit_url in list_of_spirit_urls:
-                    spirit = Spirit()
-                    spirit_profile = Scraper.get_a_spirit_profile(spirit_url, spirit)
-                    spiritdict = spirit_profile.__dict__
-                    FileManager.create_brandname_folder(spirit.brand_name)
-                    FileManager.output_to_data_file(spiritdict)
-
-    
-
-    def activate_cloudstorage():
-        pass
-
-    def activate_analyzer():
-        pass
-
-
+sample_list = ['https://www.thespiritexchange.com/p/19204/talisker-storm', 'https://www.thespiritexchange.com/p/43962/port-charlotte-10-year-old']
 
 # Boilerplate code to stop funny things happening when you import or something
 if __name__ == '__main__':
     mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?psize=2500&sort=nasc'
-    scraperinstance = Scraper(mainpage_url)
-    scraperinstance.run()
+    execute = Scraper(mainpage_url)
+    execute.run(3)
     
  
