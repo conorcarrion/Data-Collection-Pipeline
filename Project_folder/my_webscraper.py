@@ -6,6 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 from dataclasses import dataclass
 import json
@@ -35,32 +37,34 @@ class Spirit:
 # Scraper Object with methods to control it
 
 class Scraper:
-    
+
+    # Start up selenium webdriver with options. Open main page.
     def __init__(self, mainpage_url):
         # selenium webdriver setup
         options = Options()
-        options.add_argument('--headless')
-        self.driver = webdriver.Chrome()
+        # options.add_argument('--headless')
+        options.binary_location = '/usr/bin/google-chrome-beta'
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='104.0.5112.20').install()), options=options)
         self.driver.get(mainpage_url)
         self.mainpage = mainpage_url.split('.com/')[-1]
         time.sleep(1.5)
         
         
-    # Start up selenium webdriver with options. Open main page and accept cookies. 
+    # accept cookies button
     def accept_cookies(self):
-        # try: 
+        try: 
             accept_cookies = self.driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]')
             accept_cookies.click()
             print('cookies accepted')
-        # except:
-        #     pass
-        #     print('bailed on this')
-        # time.sleep(1.5)
+        except:
+            pass
+            print('cookie accept failed')
+        time.sleep(1.5)
 
 
 # Scraping methods #
 
-     # Method to fetch all the brandnames and their urls from the provided main page
+     # Method to fetch all the urls from the main page and put in python list
     def get_url_list(self):
         product_cards = self.driver.find_elements(By.XPATH, '//*[@class="product-card"]')
                
@@ -82,7 +86,8 @@ class Scraper:
         # fetch details of the spirit
         # basics
         
-        spirit.name = self.driver.find_element(By.XPATH, '//*[@class="product-main__name"]').text
+        spirit_name_element = self.driver.find_element(By.XPATH, '//*[@class="product-main__name"]')
+        spirit.name = spirit_name_element.get_attribute('innerText').split('\n')[0]
         try:
             spirit.subname = self.driver.find_element(By.XPATH, '//*[@class="product-main__sub-name"]').text
         except NoSuchElementException:
@@ -137,41 +142,45 @@ class Scraper:
 
         return (spirit)
 
- 
     # Method to do basic shutdown
     def scraper_quit(self):
         self.driver.close()
         self.driver.quit()
 
-    def create_url_list_text_file(self):
-        
-        url_list = self.get_url_list()
-        FileManager.output_list_to_text_file(url_list, self.mainpage)
-        return url_list
-
-    def dupe_scrape_check(self):
+    # checks if urls on mainpage have already been collected and either 
+    # imports the text file or creates the list by scraping
+    def url_list_scrape_check(self):
         page_scrape_file = os.path.join('raw_data', self.mainpage, f'{self.mainpage}.text')
         if os.path.exists(page_scrape_file):
             url_list = FileManager.unpack_text_to_python_list(page_scrape_file)
             print(page_scrape_file)
             return url_list
         else:
-            url_list = self.create_url_list_text_file()
+            url_list = self.get_url_list
+            FileManager.output_list_to_text_file(url_list, self.mainpage)
             return url_list
+
+    # Method to check if url has already been scraped
+    def url_scrape_check(self, spirit_instance): #TODO
+        spirit_json = os.path.join(
+            'raw_data', 
+            self.mainpage, 
+            spirit_instance.brandname, 
+            f'{spirit_instance.product_uuid}.json'
+            )
+        if os.path.exists(spirit_json):
+            pass
+        else:
+            pass
+
 
     # Method to iterate through every spirit url in the list of spirit urls provided 
     def get_x_spirit_profiles(self, list_of_spirit_urls, x=100):
-        y = 0
-        for spirit_url in list_of_spirit_urls:
-            spirit = Spirit()
-            spirit_profile = self.get_a_spirit_profile(spirit_url, spirit)
-            spiritdict = spirit_profile.__dict__
-            FileManager.output_spirit_to_data_file(spiritdict, self.mainpage)
-            y += 1
-            if y == x:
-                break
-
-
+        for n in range(x):
+            spirit_url = list_of_spirit_urls[n]
+            spirit_profile = self.get_a_spirit_profile(spirit_url, Spirit())
+            FileManager.output_spirit_to_data_file(spirit_profile, self.mainpage)
+        
     def activate_cloudstorage():
         pass
 
@@ -180,7 +189,7 @@ class Scraper:
 
     def run(self, x):
         self.accept_cookies()
-        url_list = self.dupe_scrape_check()
+        url_list = self.url_list_scrape_check()
         self.get_x_spirit_profiles(url_list, x)
         self.scraper_quit()
 
@@ -210,9 +219,9 @@ class FileManager:
         filepath = os.path.join('raw_data', mainpage_underscore, input.brand_name, input.product_uuid)
         with open(f'{filepath}.json', 'w') as outfile:
             pass
-        
+        inputdict = input.__dict__
         with open(f'{filepath}.json', 'a') as outfile:
-            json.dump(input, outfile, indent=4)
+            json.dump(inputdict, outfile, indent=4)
            
     # convert the contents of a line break separated text file at 'file path' to a Python List       
     def unpack_text_to_python_list(file_path):
@@ -230,15 +239,10 @@ class FileManager:
         return unpacked_dict
 
 
-
-        
-
-sample_list = ['https://www.thespiritexchange.com/p/19204/talisker-storm', 'https://www.thespiritexchange.com/p/43962/port-charlotte-10-year-old']
-
 # Boilerplate code to stop funny things happening when you import or something
 if __name__ == '__main__':
     mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?psize=2500&sort=nasc'
     execute = Scraper(mainpage_url)
-    execute.run(3)
+    execute.run(10)
     
  
