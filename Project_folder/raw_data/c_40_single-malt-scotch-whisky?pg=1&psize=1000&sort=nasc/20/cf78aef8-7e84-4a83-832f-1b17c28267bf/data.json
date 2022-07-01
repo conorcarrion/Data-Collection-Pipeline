@@ -1,0 +1,36 @@
+{
+    "name": "20 Year Old Speyside Cognac Finish",
+    "subname": "Whisky Works",
+    "product_id": "50659",
+    "product_uuid": "cf78aef8-7e84-4a83-832f-1b17c28267bf",
+    "contents_liquid_volume": "70cl",
+    "alcohol_by_volume": "47.1%",
+    "price": 153.0,
+    "description": "Part of the second wave of whiskies from independent bottler Whisky Works, this Speyside single malt was distilled at a lost distillery in Carron, Imperial and matured in American oak for two decades before it was finished for seven months in 20-year-old Cognac casks from the Bourgin Estate in southwest France. Bottled in 2019, this is a sweet, floral whisky, with aromas of citrus, violets and sweet, grassy herbal notes on the nose. The palate offers notes of creamy milk chocolate, golden syrup, ginger and strawberries & cream.\nTASTING NOTES (1)",
+    "facts": {
+        "Age": "20 Year Old",
+        "Vintage": "1998",
+        "Bottling Date": "2019",
+        "No of Bottles": "1593",
+        "Country": "Scotland",
+        "Cask Type": "Cognac Barrique Finish",
+        "Chill Filtered": "No",
+        "Colouring": "No"
+    },
+    "flavour_style": {
+        "BODY": "3",
+        "RICHNESS": "1",
+        "SMOKE": "0",
+        "SWEETNESS": "4"
+    },
+    "flavour_character": [
+        "VIOLET",
+        "GINGER",
+        "GRAPEFRUIT",
+        "STRAWBERRY",
+        "MILK CHOCOLATE",
+        "CREAM"
+    ],
+    "brand_name": "20",
+    "image_url": "https://img.thewhiskyexchange.com/900/malts_wwo20yo.jpg"
+}

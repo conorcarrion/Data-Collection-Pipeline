@@ -13,7 +13,8 @@ from dataclasses import dataclass
 import json
 import uuid
 import os
-
+import urllib
+import requests
 
 @dataclass(repr=True)
 class Spirit:
@@ -42,12 +43,16 @@ class Scraper:
     def __init__(self, mainpage_url):
         # selenium webdriver setup
         options = Options()
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         options.binary_location = '/usr/bin/google-chrome-beta'
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='104.0.5112.20').install()), options=options)
         self.driver.get(mainpage_url)
         self.mainpage = mainpage_url.split('.com/')[-1]
         time.sleep(1.5)
+        session = requests.Session()
+        session.headers.update({'User-Agent': 'Custom user agent'})
+
+        session.get('https://httpbin.org/headers')
         
         
     # accept cookies button
@@ -55,7 +60,6 @@ class Scraper:
         try: 
             accept_cookies = self.driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]')
             accept_cookies.click()
-            print('cookies accepted')
         except:
             pass
             print('cookie accept failed')
@@ -81,7 +85,7 @@ class Scraper:
     def get_a_spirit_profile(self, url, spirit):
 
         self.driver.get(url)
-        time.sleep(0.5)
+        time.sleep(0.3)
 
         # fetch details of the spirit
         # basics
@@ -140,6 +144,10 @@ class Scraper:
             flavour_character = flavour.find_element(By.XPATH, './span[@class="flavour-profile__label"]').text
             spirit.flavour_character.append(flavour_character)
 
+        spirit_image_element = self.driver.find_element(By.XPATH, '//*[@class="product-main__image"]')
+        spirit.image_url = spirit_image_element.get_attribute('src')
+        
+
         return (spirit)
 
     # Method to do basic shutdown
@@ -156,7 +164,7 @@ class Scraper:
             print(page_scrape_file)
             return url_list
         else:
-            url_list = self.get_url_list
+            url_list = self.get_url_list()
             FileManager.output_list_to_text_file(url_list, self.mainpage)
             return url_list
 
@@ -212,16 +220,21 @@ class FileManager:
 
     # make file called 'input' and put in the contents of 'input' as json file
     def output_spirit_to_data_file(input, mainpage):
+        # data
         mainpage_underscore= mainpage.replace('/', '_')
         Path(
-            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{mainpage_underscore}/{input.brand_name}'
+            f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{mainpage_underscore}/{input.brand_name}/{input.product_uuid}'
             ).mkdir(parents=True, exist_ok=True)
         filepath = os.path.join('raw_data', mainpage_underscore, input.brand_name, input.product_uuid)
-        with open(f'{filepath}.json', 'w') as outfile:
-            pass
         inputdict = input.__dict__
-        with open(f'{filepath}.json', 'a') as outfile:
+        with open(f'{filepath}/data.json', 'w') as outfile:
             json.dump(inputdict, outfile, indent=4)
+        # image
+        print(input.image_url)
+        
+        r = requests.get(input.image_url)
+        with open(f'{filepath}/{input.name}.jpg', 'wb') as outfile:
+            outfile.write(r.content)
            
     # convert the contents of a line break separated text file at 'file path' to a Python List       
     def unpack_text_to_python_list(file_path):
@@ -241,8 +254,9 @@ class FileManager:
 
 # Boilerplate code to stop funny things happening when you import or something
 if __name__ == '__main__':
-    mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?psize=2500&sort=nasc'
+    mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg=1&psize=1000&sort=nasc'
+
     execute = Scraper(mainpage_url)
-    execute.run(10)
+    execute.run(1)
     
  
