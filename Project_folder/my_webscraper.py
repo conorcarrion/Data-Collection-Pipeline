@@ -19,9 +19,9 @@ import requests
 @dataclass(repr=True)
 class Spirit:
 
-    # """dataclass for detailing attributes of a Spirit."""
+    """dataclass for detailing attributes of a Spirit."""
 
-    name: str = None
+    name: str = None                        
     brand_name = str = None
     subname: str = None
     product_id: str = None
@@ -39,24 +39,37 @@ class Spirit:
 
 class Scraper:
 
+    '''This is the main Scraper class which runs the selenium webdriver,
+    scrapes the urls for each product on a page, opens those pages and finally
+    scrapes the profile of the spirit.'''
+
     # Start up selenium webdriver with options. Open main page.
     def __init__(self, mainpage_url):
+
+        '''Initialises the loading of the page with Selenium settings.'''
+
         # selenium webdriver setup
         options = Options()
         options.add_argument('--headless')
-        options.binary_location = '/usr/bin/google-chrome-beta'
+        options.binary_location = '/usr/bin/google-chrome-beta' # using beta due to selenium issues with Chrome 103
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='104.0.5112.20').install()), options=options)
         self.driver.get(mainpage_url)
+       
+        # Using the final part of the url as the id for the primary list of urls to be scraped
         self.mainpage = mainpage_url.split('.com/')[-1]
         time.sleep(1.5)
+
+        # preventing HTTP 403 error
         session = requests.Session()
         session.headers.update({'User-Agent': 'Custom user agent'})
-
         session.get('https://httpbin.org/headers')
         
         
     # accept cookies button
     def accept_cookies(self):
+
+        '''Presses the accept cookies popup from the webpage.'''
+
         try: 
             accept_cookies = self.driver.find_element(By.XPATH, '//button[@data-tid="banner-accept"]')
             accept_cookies.click()
@@ -69,8 +82,15 @@ class Scraper:
 # Scraping methods #
 
      # Method to fetch all the urls from the main page and put in python list
-    def get_url_list(self):
+    def get_url_list(self) -> list:
+
+        '''Method to scrape all the spirit urls from the current page and append them to a python list.
+        
+        Returns:
+            list: strings list of URLs
+        '''
         product_cards = self.driver.find_elements(By.XPATH, '//*[@class="product-card"]')
+
                
         spirit_url_list = []
         
@@ -83,6 +103,16 @@ class Scraper:
     
     # Method to get the profile of a spirit product from the URL provided
     def get_a_spirit_profile(self, url, spirit):
+
+        '''Method to scrape the spirit profile from a given url and apply those attributes to a spirit object.
+        
+        Arguments:
+            url (string): the url of the spirit profile to be scraped
+            spirit (instance of the spirit dataclass): spirit dataclass instance
+        
+        Returns:
+            spirit (instance of the spirit dataclass): spirit dataclass instance with scraped information assigned
+        '''
 
         self.driver.get(url)
         time.sleep(0.3)
@@ -152,12 +182,18 @@ class Scraper:
 
     # Method to do basic shutdown
     def scraper_quit(self):
+
+        '''Closes the current chrome window and shuts down the driver.'''
+
         self.driver.close()
         self.driver.quit()
 
-    # checks if urls on mainpage have already been collected and either 
-    # imports the text file or creates the list by scraping
+    
     def url_list_scrape_check(self):
+
+        '''Checks if urls on mainpage have already been collected and either 
+        imports the text file or creates the list by scraping.'''
+
         page_scrape_file = os.path.join('raw_data', self.mainpage, f'{self.mainpage}.text')
         if os.path.exists(page_scrape_file):
             url_list = FileManager.unpack_text_to_python_list(page_scrape_file)
@@ -169,7 +205,10 @@ class Scraper:
             return url_list
 
     # Method to check if url has already been scraped
-    def url_scrape_check(self, spirit_instance): #TODO
+    def url_scrape_check(self, spirit_instance): #TODO not sure how to do it considering file is named uuid
+
+        '''Checks if data has already been scraped'''
+
         spirit_json = os.path.join(
             'raw_data', 
             self.mainpage, 
@@ -184,6 +223,20 @@ class Scraper:
 
     # Method to iterate through every spirit url in the list of spirit urls provided 
     def get_x_spirit_profiles(self, list_of_spirit_urls, x=100):
+
+        '''Method to begin iterating through a list of urls and scraping the profile from each page.
+        
+        Arguments:
+                list_of_spirit_urls (list): A list of url strings to be scraped
+                x (integer): defaults to 100, the number of profiles to scrape before stopping.
+                            This exists purely to limit the running of the program after demonstrating it works.
+
+        Outputs:
+                The scraped information is saved in dictionary format as a json file called data.json.
+                This file is saved to a folder named after the unique id (spirit.product_uuid), 
+                itself in a folder named after the brand/distillery name (spirit.brand_name).        
+        '''
+
         for n in range(x):
             spirit_url = list_of_spirit_urls[n]
             spirit_profile = self.get_a_spirit_profile(spirit_url, Spirit())
