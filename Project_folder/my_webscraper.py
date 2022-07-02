@@ -191,8 +191,7 @@ class Scraper:
     
     def url_list_scrape_check(self):
 
-        '''Checks if urls on mainpage have already been collected and either 
-        imports the text file or creates the list by scraping.'''
+        '''Checks if urls on mainpage have already been collected and either imports the text file or creates the list by scraping.'''
 
         page_scrape_file = os.path.join('raw_data', self.mainpage, f'{self.mainpage}.text')
         if os.path.exists(page_scrape_file):
@@ -204,7 +203,7 @@ class Scraper:
             FileManager.output_list_to_text_file(url_list, self.mainpage)
             return url_list
 
-    # Method to check if url has already been scraped
+   
     def url_scrape_check(self, spirit_instance): #TODO not sure how to do it considering file is named uuid
 
         '''Checks if data has already been scraped'''
@@ -222,12 +221,13 @@ class Scraper:
 
 
     # Method to iterate through every spirit url in the list of spirit urls provided 
-    def get_x_spirit_profiles(self, list_of_spirit_urls, x=100):
+    def get_x_spirit_profiles(self, spirit_url_list, x=100):
 
-        '''Method to begin iterating through a list of urls and scraping the profile from each page.
+        '''
+        Method to begin iterating through a list of urls and scraping the profile from each page.
         
         Arguments:
-                list_of_spirit_urls (list): A list of url strings to be scraped
+                spirit_url_list (list): A list of url strings to be scraped
                 x (integer): defaults to 100, the number of profiles to scrape before stopping.
                             This exists purely to limit the running of the program after demonstrating it works.
 
@@ -238,7 +238,7 @@ class Scraper:
         '''
 
         for n in range(x):
-            spirit_url = list_of_spirit_urls[n]
+            spirit_url = spirit_url_list[n]
             spirit_profile = self.get_a_spirit_profile(spirit_url, Spirit())
             FileManager.output_spirit_to_data_file(spirit_profile, self.mainpage)
         
@@ -249,6 +249,17 @@ class Scraper:
         pass
 
     def run(self, x):
+
+        '''
+        This method is the meta information of running the program. After initialisation it accepts the
+        cookies, checks if the url list exists then either: 
+
+            1. imports it from a text file and converts to a python list 
+            2. scrapes the urls from the mainpage and appends them to a python list
+            
+        Once x (default x=100) number of profiles have been scraped, the scraper closes the chrome window and webdriver.
+        '''
+
         self.accept_cookies()
         url_list = self.url_list_scrape_check()
         self.get_x_spirit_profiles(url_list, x)
@@ -256,8 +267,31 @@ class Scraper:
 
 class FileManager:
 
+    '''
+    This class has methods for converting files to python usable objects and back. The url list is kept in a text file
+    delimited by line breaks for human legibility. The spirit dataclass objects are converted to dictionaries and saved as 
+    as json files. 
+    '''
+
     # Take a list variable and a name for the file and create/overwrite the file then add contents as a list with line breaks
     def output_list_to_text_file(url_list, mainpage):
+
+        '''
+        This method outputs a python list to a line break delimited text file to a folder designated by the mainpage url
+        
+        Arguments:
+            url_list (list): List of of spirit profile pages
+            mainpage (string): url ending 
+        
+        As the url ending has forward slash ( / ) in it, which intereferes with path naming in os file systems, they are converted
+        to underscores ( _ ). 
+
+        eg.
+        c/49/single-malt-scotch-whisky?pg=1&psize=1000&sort=nasc
+        to
+        c_40_single-malt-scotch-whisky?pg=1&psize=1000&sort=nasc
+        '''
+
         mainpage_underscore= mainpage.replace('/', '_')
         Path(
             f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{mainpage_underscore}'
@@ -271,9 +305,20 @@ class FileManager:
                 l.write(url)
                 l.write('\n')
 
-    # make file called 'input' and put in the contents of 'input' as json file
+    
     def output_spirit_to_data_file(input, mainpage):
-        # data
+        
+        '''
+        Method that takes an input (dataclass instance) and the mainpage id and outputs the attributes of the input
+        as a dictionary in a json file. The attributes of the input are used to name the folders where the final data.json file is saved.
+        
+        eg. raw_data / mainpage id (everything after .com/) / brand name / product uuid / data.json'
+
+        Arguments:
+            input (dataclass instance):
+        
+        '''
+
         mainpage_underscore= mainpage.replace('/', '_')
         Path(
             f'/home/conor/Documents/Scratch/Data Collection/Project_folder/raw_data/{mainpage_underscore}/{input.brand_name}/{input.product_uuid}'
@@ -289,10 +334,21 @@ class FileManager:
         with open(f'{filepath}/{input.name}.jpg', 'wb') as outfile:
             outfile.write(r.content)
            
-    # convert the contents of a line break separated text file at 'file path' to a Python List       
+         
     def unpack_text_to_python_list(file_path):
-        with open(file_path, 'r') as file:
-            url_list_content = file.read()
+
+        '''
+        Method to convert the contents of a line break separated text file at 'file path' to a Python List.
+        
+        Arguments:
+            file_path (string): path to the file to be read as a string
+            
+        Returns:
+            url_list (list): a list of urls to be scraped
+        '''
+
+        with open(file_path, 'r') as outfile:
+            url_list_content = outfile.read()
             url_list = url_list_content.split('\n')
             
         return url_list
