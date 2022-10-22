@@ -1,0 +1,12 @@
+Milestone 6 - Scalably store the data
+
+
+change webscraper to default upload to cloud only. DONE
+change json files to not have nested dict/lists - not easy, what do? BYPASSED - FIX IT IN POST
+SQL prerequisites content. 
+make rds server
+have jpgs and raw data to s3, then use sql to upload raw data to rds server
+ check product id of database to stop rescraping
+ pandas to make table or sqlalchemy
+
+Milestone 7 - preventing re-scraping and getting more data

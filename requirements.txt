@@ -1,0 +1,8 @@
+
+###### Requirements without Version Specifiers ######
+selenium
+requests
+uuid
+Path
+boto3
+hypothesis
