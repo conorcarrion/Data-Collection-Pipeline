@@ -50,14 +50,14 @@ While I wanted to specifically look at Scotch single malt whisky, I wanted to en
 
 Looking at a single product:
 
-[Lagavulin Product page](readme_images/Lagavulin-16-product-page.png)
-[Lagavulin Product details](readme_images/Lagavulin-16-product-details.png)
+![Lagavulin Product page](readme_images/Lagavulin-16-product-page.png)
+![Lagavulin Product details](readme_images/Lagavulin-16-product-details.png)
 
 I started with this page: https://www.thewhiskyexchange.com/brands/scotchwhisky/40/single-malt-scotch-whisky.
 
 This page has an A-Z of various brands/distilleries, which when opened, have a page of the products by that brand/distillery. I felt this was a useful layout as it had the products nested within the brands, which I could implement as folders/products/data later. 
 
-[Lagavulin A-Z Scotch single malt page](readme_images/A-Zpage.png)
+![Lagavulin A-Z Scotch single malt page](readme_images/A-Zpage.png)
 
 I need to get the urls of all these into a list:
 
