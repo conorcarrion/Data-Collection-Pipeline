@@ -5,9 +5,8 @@ class Spirit:
 
     """Dataclass for detailing attributes of a Spirit."""
 
-    name: str = ''                    
-    brand_name = str = ''
-    subname: str = ''
+    name: str = ''
+    subname: str = ''                    
     product_id: str = ''
     product_uuid: str = ''
     contents_liquid_volume: str = '0cl'
@@ -17,3 +16,6 @@ class Spirit:
     facts: dict = None
     flavour_style: dict = None
     flavour_character: list = None
+    image_url: str = ''
+    filepath: str = ''
+    brand_name = str = ''

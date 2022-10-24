@@ -5,8 +5,8 @@ from lib.Spirit import Spirit
 
 import os
 
-mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg=1&psize=500&sort=nasc'
-x = 5
+mainpage_url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg=1&psize=120&sort=nasc'
+x = 20
 
 s3_bucket = 'aicore-webscraper-cq'
 

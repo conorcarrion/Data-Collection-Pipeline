@@ -21,9 +21,6 @@ class Scraper:
     This is the main Scraper class which runs the selenium webdriver,
     scrapes the urls for each product on a page, opens those pages and finally
     scrapes the profile of the spirit.
-
-    short description of each method
-
     '''
 
     # Start up selenium webdriver with options. Open main page.
