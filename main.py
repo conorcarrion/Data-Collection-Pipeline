@@ -11,7 +11,7 @@ s3_bucket = 'aicore-webscraper-cq'
 
 class Main:
     
-    def __init__(self, mainpage_url, x=100, save_locally=False):
+    def __init__(self, mainpage_url, save_locally=False, x=100):
 
         '''
         This method is the meta information of running the program. After initialisation it accepts the
@@ -93,5 +93,5 @@ class Main:
 
 
 if __name__ == '__main__':
-    program = Main(mainpage_url, x, False)
+    program = Main(mainpage_url, False)
 
