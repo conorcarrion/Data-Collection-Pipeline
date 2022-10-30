@@ -162,3 +162,5 @@ For FileManager methods, I made a test list: ['x', 'y', 'z'] to test the text me
 ### Scalably store the data
 
 I set up an AWS S3 server and created boto3 methods to upload a dictionary of the data in json form and the main product image as jpg. I also set up and connected an RDS server and used psycopg2, sqlalchemy and pandas to upload my data as rows into a table. 
+
+small update to test Docker image push
