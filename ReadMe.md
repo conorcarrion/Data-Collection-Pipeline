@@ -219,6 +219,90 @@ For FileManager methods, I made a test list: ['x', 'y', 'z'] to test the text me
 ### Milestone 6
 #### Scalably store the data
 
-I set up an AWS S3 server and created boto3 methods to upload a dictionary of the data in json form and the main product image as jpg. I also set up and connected an RDS server and used psycopg2, sqlalchemy and pandas to upload my data as rows into a table. 
+I set up an AWS S3 server to store my raw data and  restructured my filepaths so that the spirits would be saved as a reflection of how thewhiskyexchange stores their products. 
+The Whisky Exchange / Scotch Whisky / Single Malt Scotch Whisky / <Region> / <Brand name>
 
-small update to test Docker image push
+I then created methods using the python 'boto3' library that uploads: a JSON file with a dictionary of the Spirit data and a JPG file with the picture of the main product. To allow the server to accept these uploads I created security groups and a role that would allow my IP to access the S3.  
+
+I a set up a Relational Database Server (RDS) with PostgreSQL. PostgreSQL is a powerful, open source object-relational database system with over 35 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance. Using pgadmin4 and SQL I created the database with column headers. 
+
+I then used psycopg2, sqlalchemy and pandas to create methods to insert my data as rows into the database. 
+
+### Milestone 7
+#### Containerising the scraper
+
+After a final refactoring of the code and ensuring all the test methods were passing I created a Dockerfile for the webscraper package.
+
+```
+# starting with latest python image
+FROM python:latest
+
+# making a directory for the webscraper
+RUN mkdir /whiskywebscraper
+# adding trusted keys
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+# downloading google chrome
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+# updating apt-get
+RUN apt-get -y update
+# installing google chrome
+RUN apt-get install -y google-chrome-stable
+# downloading selenium chromedriver
+RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+# unzipping the selenium zip file
+RUN apt-get install -yqq unzip
+# installing selenium chromedriver
+RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
+# the working directory
+WORKDIR /whiskywebscraper
+
+# add entire contents of this folder to the image
+COPY . .
+
+# install library requirements
+RUN pip install -r requirements.txt
+
+# execute main.py
+ENTRYPOINT ["python3", "main.py"]
+```
+
+### Milestone 8
+#### Set up a CI/CD pipeline for your Docker image
+
+By entering my Dockerhub login details to Github secrets, I can use a Github action to automatically create a new Docker image upon using git push. 
+
+```
+name: Docker Image
+
+on:
+  push:
+    branches:
+      - 'main'
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout 
+        uses: actions/checkout@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          file: Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/data-collection:latest
+```
+
+I completed the documentation above and brought an end to the project for now. I would like to reinstate my AWS servers and scrape more profiles so I can do some analysis on the results. However my RDS server started costing me money which was not intended. I need to fix that as there is no reason a database of sub 100 rows should be 80GB. 
