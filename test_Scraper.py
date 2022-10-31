@@ -11,7 +11,7 @@ class ScraperTestCase(unittest.TestCase):
 
     def setUp(self):
 
-        self.url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg=1&psize=500&sort=nasc'
+        self.url = 'https://www.thewhiskyexchange.com/c/40/single-malt-scotch-whisky?pg=1&psize=24&sort=nasc'
         self.scraper = Scraper(self.url, True)
         self.scraper.accept_cookies
          
