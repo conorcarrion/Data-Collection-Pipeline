@@ -117,16 +117,18 @@ class Scraper:
 # Scraping methods #
 
      # Method to fetch all the urls from the main page and put in python list
-    def get_url_list(self, url) -> list:
+    def get_url_list(self, mainpage_url) -> list:
 
         '''
         Method to scrape all the spirit urls from the main page and further pages and append the product urls to a python list.
         -
+        Arguments:
+            mainpage_url(string): the 'mainpage' url with all the products to be scraped.
         Returns:
             list: strings list of URLs
         '''
         print('fetching url list from driver')
-        self.driver.get(url)
+        self.driver.get(mainpage_url)
         self.driver.implicitly_wait(2)
 
         # Total number of spirits on all pages
@@ -146,7 +148,7 @@ class Scraper:
         spirit_url_list = []
         for x in range(1, number_of_pages+1):
 
-            newpage = self.pagenumber_adjuster(url, x)
+            newpage = self.pagenumber_adjuster(mainpage_url, x)
             self.driver.get(newpage)
             self.driver.implicitly_wait(2)
             product_cards = self.driver.find_elements(By.XPATH, '//*[@class="product-card"]')
